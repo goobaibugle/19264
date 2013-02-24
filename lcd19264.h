@@ -11,8 +11,8 @@
 #define LCD19264_ERROR 1
 
 typedef struct {
-    int (*initialize)();
-    int (*clear)();
+    int (*initialize)(void);
+    int (*clear)(void);
     int (*display_string)(int x,
                           int y,
                           const char *s);
@@ -20,14 +20,14 @@ typedef struct {
                        int y);
     int (*clear_pixel)(int x,
                        int y);
-    int (*power_on)();
-    int (*power_off)();
-    int (*backlight_on)();
-    int (*backlight_off)();
+    int (*power_on)(void);
+    int (*power_off)(void);
+    int (*backlight_on)(void);
+    int (*backlight_off)(void);
 } LCD19264;
 
 #ifdef USE_CH19264B
-extern const LCD19264 * const PTR_CH19264;
+extern const LCD19264 CH19264B;
 #endif  /* USE_CH19264B */
                             
 #endif  /* LCD19264_H */

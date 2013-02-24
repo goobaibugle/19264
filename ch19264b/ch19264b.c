@@ -4,6 +4,7 @@
 #include "../lcd19264.h"
 #include "./config_ch19264b.h"
 #include <stdint.h>
+#include <util/delay.h>
 
 #define CS_HIGH() (RS_CS_OUT_PORT |= _BV(RS_CS_PIN))
 #define CS_LOW() (RS_CS_OUT_PORT &= ~_BV(RS_CS_PIN))
@@ -38,8 +39,8 @@ static void write_byte_1st(const uint8_t b,
     }
     /* RW */
     SID_LOW();
-    SCLK2_HIGH();
-    SCLK2_LOW();
+    SCLK1_HIGH();
+    SCLK1_LOW();
     /* RS */
     if (rs)
     {
@@ -232,6 +233,8 @@ static uint8_t read_byte_1st(int rs)
     }
 
     CS_LOW();
+    
+    return b;
 }
 
 static uint8_t read_byte_2nd(int rs)
@@ -297,12 +300,16 @@ static uint8_t read_byte_2nd(int rs)
     }
 
     CS_LOW();
+    
+    return b;
 }
 
-int display_clear()
+int display_clear(void)
 {
     write_byte_1st(0x01, CH19264B_INSTRUCTION);
     write_byte_2nd(0x01, CH19264B_INSTRUCTION);
+    write_byte_1st(0x0f, CH19264B_INSTRUCTION);
+    write_byte_2nd(0x0f, CH19264B_INSTRUCTION);
 
     return 0;
 }
@@ -312,9 +319,12 @@ int display_string(int x,
                    const char *s)
 {
     write_byte_1st(0x80 + 0x10 * y + x, CH19264B_INSTRUCTION);
+    _delay_ms(1); /* for 8Mhz avr, this delay is necessary. */
     while (*s) {
         write_byte_1st(*s++, CH19264B_DATA);
     }
+    
+    return 0;
 }
 
 const LCD19264 CH19264B = {display_clear,
