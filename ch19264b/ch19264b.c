@@ -11,7 +11,9 @@
 
 #define SID_HIGH() (RW_SID_OUT_PORT |= _BV(RW_SID_PIN))
 #define SID_LOW() (RW_SID_OUT_PORT &= ~_BV(RW_SID_PIN))
-#define SID_IN() ((RW_SID_IN_PORT >> _BV(RW_SID_PIN)) & 0x01)
+#define SID() ((RW_SID_IN_PORT >> _BV(RW_SID_PIN)) & 0x01)
+#define SID_IN() (RW_SID_DDR &= ~_BV(RW_SID_PIN))
+#define SID_OUT() (RW_SID_DDR |= _BV(RW_SID_PIN))
 
 #define SCLK1_HIGH() (E1_SCLK1_OUT_PORT |= _BV(E1_SCLK1_PIN))
 #define SCLK1_LOW() (E1_SCLK1_OUT_PORT &= ~_BV(E1_SCLK1_PIN))
@@ -29,6 +31,8 @@ static void write_byte_1st(const uint8_t b,
     CS_LOW();
     SCLK1_LOW();
     CS_HIGH();
+    
+    SID_OUT();
     
     /* Synchronizing Bit string */
     SID_HIGH();
@@ -103,6 +107,8 @@ static void write_byte_2nd(const uint8_t b,
     SCLK2_LOW();
     CS_HIGH();
     
+    SID_OUT();
+    
     /* Synchronizing Bit string */
     SID_HIGH();
     for (int i = 0; i < 5; ++i)
@@ -173,9 +179,12 @@ static void write_byte_2nd(const uint8_t b,
 static uint8_t read_byte_1st(int rs)
 {
     uint8_t b = '\0';
+    
     CS_LOW();
     SCLK1_LOW();
     CS_HIGH();
+    
+    SID_IN();
     
     /* Synchronizing Bit string */
     SID_HIGH();
@@ -206,7 +215,7 @@ static uint8_t read_byte_1st(int rs)
     {
         SCLK1_HIGH();
         b <<= 1;
-        b |= SID_IN();
+        b |= SID();
         SCLK1_LOW();
     }
     /* 0000 */
@@ -221,7 +230,7 @@ static uint8_t read_byte_1st(int rs)
     {
         SCLK1_HIGH();
         b <<= 1;
-        b |= SID_IN();
+        b |= SID();
         SCLK1_LOW();
     }
     /* 0000 */
@@ -240,9 +249,12 @@ static uint8_t read_byte_1st(int rs)
 static uint8_t read_byte_2nd(int rs)
 {
     uint8_t b = '\0';
+    
     CS_LOW();
     SCLK2_LOW();
     CS_HIGH();
+    
+    SID_IN();
     
     /* Synchronizing Bit string */
     SID_HIGH();
@@ -273,7 +285,7 @@ static uint8_t read_byte_2nd(int rs)
     {
         SCLK2_HIGH();
         b <<= 1;
-        b |= SID_IN();
+        b |= SID();
         SCLK2_LOW();
     }
     /* 0000 */
@@ -288,7 +300,7 @@ static uint8_t read_byte_2nd(int rs)
     {
         SCLK2_HIGH();
         b <<= 1;
-        b |= SID_IN();
+        b |= SID();
         SCLK2_LOW();
     }
     /* 0000 */
@@ -314,6 +326,17 @@ int display_clear(void)
     return 0;
 }
 
+int initialize(void)
+{
+    RS_CS_DDR |= _BV(RS_CS_PIN);
+    E1_SCLK1_DDR |= _BV(E1_SCLK1_PIN);
+    E2_SCLK2_DDR |= _BV(E2_SCLK2_PIN);
+    
+    display_clear();
+
+    return 0;
+}
+
 int display_string(int x,
                    int y,
                    const char *s)
@@ -327,7 +350,7 @@ int display_string(int x,
     return 0;
 }
 
-const LCD19264 CH19264B = {display_clear,
+const LCD19264 CH19264B = {initialize,
                            display_clear,
                            display_string,
                            (void *)0,
