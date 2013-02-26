@@ -28,6 +28,7 @@ static const int CH19264B_DATA = 1;
 static void write_byte_1st(const uint8_t b,
                            const int rs)
 {
+    _delay_ms(1);
     CS_LOW();
     SCLK1_LOW();
     CS_HIGH();
@@ -103,6 +104,7 @@ static void write_byte_1st(const uint8_t b,
 static void write_byte_2nd(const uint8_t b,
                            const int rs)
 {
+    _delay_ms(1);
     CS_LOW();
     SCLK2_LOW();
     CS_HIGH();
@@ -337,8 +339,8 @@ int initialize(void)
     return 0;
 }
 
-int display_string(int x,
-                   int y,
+int display_string(int y,
+                   int x,
                    const char *s)
 {
     write_byte_1st(0x80 + 0x10 * y + x, CH19264B_INSTRUCTION);

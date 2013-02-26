@@ -13,7 +13,7 @@ int main(void)
     lcd->initialize();
     PORTC |= 0x04;
     lcd->display_string(0, 0, "powered by:  3");
-    lcd->display_string(0, 1, 
+    lcd->display_string(1, 0, 
         "    \xc1\xf5\xbd\xf8\xb3\xbf Jks Liu"); /* Chinese GB code
                                                     of my name */
     for (;;) {
