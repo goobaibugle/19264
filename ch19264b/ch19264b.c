@@ -343,11 +343,20 @@ int display_string(int y,
                    int x,
                    const char *s)
 {
-    write_byte_1st(0x80 + 0x10 * y + x, CH19264B_INSTRUCTION);
-    _delay_ms(1); /* for 8Mhz avr, this delay is necessary. */
-    while (*s) {
-        write_byte_1st(*s++, CH19264B_DATA);
+    if (y < 2) {
+        write_byte_1st(0x80 + 0x10 * y + x, CH19264B_INSTRUCTION);
+        _delay_ms(1); /* for 8Mhz avr, this delay is necessary. */
+        while (*s) {
+            write_byte_1st(*s++, CH19264B_DATA);
+        }
+    } else {
+        write_byte_2nd(0x80 + 0x10 * (y - 2) + x, CH19264B_INSTRUCTION);
+        _delay_ms(1); /* for 8Mhz avr, this delay is necessary. */
+        while (*s) {
+            write_byte_2nd(*s++, CH19264B_DATA);
+        }
     }
+
     
     return 0;
 }

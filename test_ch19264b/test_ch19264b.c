@@ -12,8 +12,10 @@ int main(void)
     PORTC |= 0x02;
     lcd->initialize();
     PORTC |= 0x04;
-    lcd->display_string(0, 0, "powered by:  3");
-    lcd->display_string(1, 0, 
+    lcd->display_string(0, 0, "欢迎使用PTJ-5000系列产品");
+    lcd->display_string(1, 0, "powered by:  3");
+    lcd->display_string(2, 0, "请将右钮由 OFF调到 PAUSE");
+    lcd->display_string(3, 0, 
         "    \xc1\xf5\xbd\xf8\xb3\xbf Jks Liu"); /* Chinese GB code
                                                     of my name */
     for (;;) {
