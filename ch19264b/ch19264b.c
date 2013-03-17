@@ -345,7 +345,8 @@ int display_string(int y,
 {
     if (y < 2) {
         write_byte_1st(0x80 + 0x10 * y + x, CH19264B_INSTRUCTION);
-        _delay_ms(1); /* for 8Mhz avr, this delay is necessary. */
+        _delay_ms(1); /* for 8Mhz avr, this delay is necessary.
+                       * Maybe to read BF(Busy Flag) is better */
         while (*s) {
             write_byte_1st(*s++, CH19264B_DATA);
         }
