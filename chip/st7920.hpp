@@ -43,8 +43,39 @@ private:
     void set_sid(void) {*rw_sid_port_ |= 1 << rw_sid_mask_;}
     void reset_sid(void) {*rw_sid_port_ &= ~(1 << rw_sid_mask_);}
     bool sid(void) {return (*(rw_sid_port_ - 2) >> rw_sid_mask_) & 0x01;}
-    void make_sid_in(void) {*(rw_sid_port_ - 1)
+    void make_sid_in(void) {*(rw_sid_port_ - 1) &= ~(1 << rw_sid_mask_);}
+    void make_sid_out(void) {*(rw_sid_port_ - 1) |= 1 << rw_sid_mask_;}
+
+    void set_sclk(void) {*e_sclk_port_ |= 1 << e_sclk_mask_;}
+    void reset_sclk(void) {*e_sclk_port_ &= ~(1 << e_sclk_mask_);}
+
+    void write_data(uint8_t b);
+    void write_command(uini8_t c);
+    // TODO(jks Liu, chinatianma#gmail.com)
+    // To complete read_data & read_command.
+    // inline is not required.
+    uint8_t read_data(void){return 0};
+    uini8_t read_command(void){return 0};
+    // d dosen't include the beginning 4 ones &
+    // last 4 zeros.
+    void serial_data_transfer(uint16_t d);
 };
 
 #endif  // CHIP_ST7920_HPP
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
