@@ -21,12 +21,15 @@ public:
     St7920(volatile uint8_t *rs_cs_port, uint8_t rs_cs_mask,
             volatile uint8_t *rw_sid_port, uint8_t rw_sid_mask,
             volatile uint8_t *e_sclk_port, uint8_t e_sclk_mask);
-    uint8_t initialize(void);
-    uint8_t clear(void);
-    uint8_t display_string(uint8_t y, uint8_t x, const char *s);
-    uini8_t write_16_pixels(uint8_t y, uint8_t x);
-    uint8_t cursor_on(void);
-    uint8_t cursor_off(void);
+    int8_t initialize(void);
+    int8_t clear(void);
+    int8_t display_string(uint8_t y, uint8_t x, const char *s);
+    int8_t write_16_pixels(uint8_t y, uint8_t x);
+    int8_t cursor_on(void);
+    int8_t cursor_off(void);
+    int8_t set_cursor(uint8_t y, uint8_t x);
+    int8_t display_on(void);
+    int8_t display_off(void);
 private:
     // PORTX isn't volatile, but I use it to access PINX,
     // so volatile is required.
@@ -37,6 +40,7 @@ private:
     volatile uint8_t *const e_sclk_port_;
     uint8_t const e_sclk_mask_;
     
+    // I/O operation
     void set_cs(void) {*rs_cs_port_ |= 1 << rs_cs_mask_;}
     void reset_cs(void) {*rs_cs_port_ &= ~(1 << rs_cs_mask_);}
 
@@ -55,10 +59,28 @@ private:
     // To complete read_data & read_command.
     // inline is not required.
     uint8_t read_data(void){return 0};
-    uini8_t read_command(void){return 0};
+    uint8_t read_command(void){return 0};
     // d dosen't include the beginning 4 ones &
     // last 4 zeros.
     void serial_data_transfer(uint16_t d);
+
+    // Instruction set which used bit mask
+    // These set must have init value thoeretically.
+    // TODO(jks Liu. chinatianma#gmail.com): complete this set.
+    //
+    // 0b0000 1DCB: bit7...0
+    //    D = 1: Display ON
+    //    C = 1: Cursor ON
+    //    B = 1: Character Blink ON
+    uint8_t display_control_;
+    // 0b001D xRGx: bit7...0 D(DL) R(RE)
+    //    DL = 1: 8-bit interface
+    //         0: 4-bit interface
+    //    RE = 1: extended instruction
+    //         0: basic instruction
+    //    G  = 1: graphic display ON  (RE = 1)
+    //         0: graphic display OFF (RE = 1)
+    uint8_t function_set_;
 };
 
 #endif  // CHIP_ST7920_HPP
