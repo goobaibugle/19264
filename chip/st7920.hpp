@@ -24,12 +24,14 @@ public:
     int8_t initialize(void);
     int8_t clear(void);
     int8_t display_string(uint8_t y, uint8_t x, const char *s);
-    int8_t write_16_pixels(uint8_t y, uint8_t x);
+    int8_t write_16_pixels(uint8_t y, uint8_t x, uint16_t c);
     int8_t cursor_on(void);
     int8_t cursor_off(void);
     int8_t set_cursor(uint8_t y, uint8_t x);
     int8_t display_on(void);
     int8_t display_off(void);
+    int8_t graphic_on(void);
+    int8_t graphic_off(void);
 private:
     // PORTX isn't volatile, but I use it to access PINX,
     // so volatile is required.
@@ -81,6 +83,8 @@ private:
     //    G  = 1: graphic display ON  (RE = 1)
     //         0: graphic display OFF (RE = 1)
     uint8_t function_set_;
+    int8_t enter_basic(void);
+    int8_t enter_extended(void);
 };
 
 #endif  // CHIP_ST7920_HPP
