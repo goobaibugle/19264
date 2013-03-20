@@ -10,8 +10,11 @@ St7920::St7920(volatile uint8_t *rs_cs_port, uint8_t rs_cs_mask,
     e_sclk_port_(e_sclk_port), e_sclk_mask_(e_sclk_mask),
     // Register flag initial setting,
     // refer to st7920 datasheet
-    display_control_(0x08), function_set_(0x18)
-{}
+    display_control_(0x08), function_set_(0x38)
+{
+    initialize();
+    cursor_off();
+}
 
 void St7920::write_data(uint8_t b) {
     serial_data_transfer(
@@ -59,14 +62,12 @@ void St7920::serial_data_transfer(uint16_t d) {
     }
     
     reset_cs();
-    // Found in practice that delay is require
-    _delay_ms(1);               
 }
 
 int8_t St7920::initialize(void) {
     // Set CS & SCLK out mode
-    *(rs_cs_port_ - 1) |= rs_cs_mask_;
-    *(e_sclk_port_ - 1) |= e_sclk_mask_;
+    *(rs_cs_port_ - 1) |= 1 << rs_cs_mask_;
+    *(e_sclk_port_ - 1) |= 1 << e_sclk_mask_;
     enter_basic();
     clear();
     display_on();
@@ -77,7 +78,7 @@ int8_t St7920::clear(void) {
     enter_basic();
     write_command(DISPLAY_CLEAR);
     // Found in practice that delay is require
-    _delay_ms(1);               
+    _delay_ms(2);               
     return 0;
 }
 
@@ -99,7 +100,6 @@ int8_t St7920::display_string(uint8_t y, uint8_t x, const char *s) {
 }
 
 int8_t St7920::write_16_pixels(uint8_t y, uint8_t x, uint16_t c) {
-    enter_extended();
     write_command(GDRAM_BASE_ADDRESS + y);
     write_command(GDRAM_BASE_ADDRESS + x);
     write_data(c >> 8);
@@ -147,6 +147,16 @@ int8_t St7920::graphic_off(void) {
     function_set_ &= ~FUNCTION_SET_GRAPHIC_DISPLAY_ON;
     write_command(function_set_);
     return 0;
+}
+
+int8_t St7920::graphic_clear(void) {
+    enter_extended();
+    graphic_on();
+    for (uint8_t i = 0; i < 0x3f; ++i) {
+        for (uint8_t j = 0; j < 0x0f; ++j) {
+            write_16_pixels(i, j, 0x0000);
+        }
+    }
 }
 
 int8_t St7920::enter_basic(void) {

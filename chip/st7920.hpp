@@ -21,7 +21,6 @@ public:
     St7920(volatile uint8_t *rs_cs_port, uint8_t rs_cs_mask,
             volatile uint8_t *rw_sid_port, uint8_t rw_sid_mask,
             volatile uint8_t *e_sclk_port, uint8_t e_sclk_mask);
-    int8_t initialize(void);
     int8_t clear(void);
     int8_t display_string(uint8_t y, uint8_t x, const char *s);
     int8_t write_16_pixels(uint8_t y, uint8_t x, uint16_t c);
@@ -32,6 +31,7 @@ public:
     int8_t display_off(void);
     int8_t graphic_on(void);
     int8_t graphic_off(void);
+    int8_t graphic_clear(void);
 private:
     // PORTX isn't volatile, but I use it to access PINX,
     // so volatile is required.
@@ -55,6 +55,9 @@ private:
     void set_sclk(void) {*e_sclk_port_ |= 1 << e_sclk_mask_;}
     void reset_sclk(void) {*e_sclk_port_ &= ~(1 << e_sclk_mask_);}
 
+    int8_t initialize(void);
+
+    // Timing sequence
     void write_data(uint8_t b);
     void write_command(uint8_t c);
     // TODO(jks Liu, chinatianma#gmail.com)

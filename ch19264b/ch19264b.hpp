@@ -12,7 +12,8 @@ public:
     uint8_t display_string(uint8_t y, uint8_t x, const char *s);
     uint8_t write_16_pixels(uint8_t y, uint8_t x);
 private:
-    class St7920 m_st7920[2];
+    class St7920 st7920_top_;
+    class St7920 st7920_bottom_;
 };
 
 #endif  // CH19264B_CH19264B_HPP
