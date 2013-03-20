@@ -83,12 +83,12 @@ int8_t St7920::clear(void) {
 
 int8_t St7920::set_cursor(uint8_t y, uint8_t x) {
     enter_basic();
-    write_command(DDRAM_BASE_ADDRESS + y * DDR_COLUMN_NUM + x);
+    write_command(DDRAM_BASE_ADDRESS + y * DDRAM_COLUMN_NUM + x);
     return 0;
 }
 
 int8_t St7920::display_string(uint8_t y, uint8_t x, const char *s) {
-    if ((y >= 2) || (x >= (DDR_COLUMN_NUM * 2))) {
+    if ((y >= 2) || (x >= (DDRAM_COLUMN_NUM * 2))) {
         return -1;
     }
     set_cursor(y, x);
@@ -104,52 +104,61 @@ int8_t St7920::write_16_pixels(uint8_t y, uint8_t x, uint16_t c) {
     write_command(GDRAM_BASE_ADDRESS + x);
     write_data(c >> 8);
     write_data(c & 0xff);
+    return 0;
 }
 
 int8_t St7920::cursor_on(void) {
     enter_basic();
     display_control_ |= DISPLAY_CONTROL_CURSOR_ON;
     write_command(display_control_);
+    return 0;
 }
 
 int8_t St7920::cursor_off(void) {
     enter_basic();
     display_control_ &= ~DISPLAY_CONTROL_CURSOR_ON;
     write_command(display_control_);
+    return 0;
 }
 
 int8_t St7920::display_on(void) {
     enter_basic();
     display_control_ |= DISPLAY_CONTROL_DISPLAY_ON;
     write_command(display_control_);
+    return 0;
 }
 
 int8_t St7920::display_off(void) {
     enter_basic();
     display_control_ &= ~DISPLAY_CONTROL_DISPLAY_ON;
     write_command(display_control_);
+    return 0;
 }
 
 int8_t St7920::graphic_on(void) {
     enter_extended();
-    function_set_ |= FUNCTION_SET_DISPLAY_ON;
+    function_set_ |= FUNCTION_SET_GRAPHIC_DISPLAY_ON;
     write_command(function_set_);
+    return 0;
 }
 
 int8_t St7920::graphic_off(void) {
     enter_extended();
-    function_set_ &= ~FUNCTION_SET_DISPLAY_ON;
+    function_set_ &= ~FUNCTION_SET_GRAPHIC_DISPLAY_ON;
     write_command(function_set_);
+    return 0;
 }
 
-int8_t enter_basic(void) {
+int8_t St7920::enter_basic(void) {
     function_set_ &= ~FUNCTION_SET_EXTENDED;
     write_command(function_set_);
+    return 0;
 }
 
-int8_t enter_extended(void) {
+int8_t St7920::enter_extended(void) {
     function_set_ |= FUNCTION_SET_EXTENDED;
     write_command(function_set_);
+    return 0;
 }
 
 

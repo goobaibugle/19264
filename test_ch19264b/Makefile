@@ -84,7 +84,7 @@ SRC = $(TARGET).c  ../ch19264b/ch19264b.c
 
 
 # List C++ source files here. (C dependencies are automatically generated.)
-CPPSRC = 
+CPPSRC = ../chip/st7920.cpp 
 
 
 # List Assembler source files here.
@@ -543,7 +543,8 @@ extcoff: $(TARGET).elf
 %.elf: $(OBJ)
 	@echo
 	@echo $(MSG_LINKING) $@
-	$(CC) $(ALL_CFLAGS) $^ --output $@ $(LDFLAGS)
+	#$(CC) $(ALL_CFLAGS) $^ --output $@ $(LDFLAGS)
+	$(CC)  $^ --output $@ $(LDFLAGS) #jks add
 
 
 # Compile: create object files from C source files.
@@ -600,6 +601,11 @@ clean_list :
 	$(REMOVE) $(SRC:.c=.s)
 	$(REMOVE) $(SRC:.c=.d)
 	$(REMOVE) $(SRC:.c=.i)
+	$(REMOVE) $(CPPSRC:%.cpp=$(OBJDIR)/%.o)
+	$(REMOVE) $(CPPSRC:%.cpp=$(OBJDIR)/%.lst)
+	$(REMOVE) $(CPPSRC:.cpp=.s)
+	$(REMOVE) $(CPPSRC:.cpp=.d)
+	$(REMOVE) $(CPPSRC:.cpp=.i)
 	$(REMOVEDIR) .dep
 
 

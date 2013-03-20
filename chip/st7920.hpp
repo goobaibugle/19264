@@ -38,7 +38,7 @@ private:
     volatile uint8_t *const rs_cs_port_;
     uint8_t const rs_cs_mask_;
     volatile uint8_t *const rw_sid_port_;
-    uint8_t const const rw_sid_mask_;
+    uint8_t const  rw_sid_mask_;
     volatile uint8_t *const e_sclk_port_;
     uint8_t const e_sclk_mask_;
     
@@ -56,12 +56,12 @@ private:
     void reset_sclk(void) {*e_sclk_port_ &= ~(1 << e_sclk_mask_);}
 
     void write_data(uint8_t b);
-    void write_command(uini8_t c);
+    void write_command(uint8_t c);
     // TODO(jks Liu, chinatianma#gmail.com)
     // To complete read_data & read_command.
     // inline is not required.
-    uint8_t read_data(void){return 0};
-    uint8_t read_command(void){return 0};
+    uint8_t read_data(void){return 0;}
+    uint8_t read_command(void){return 0;}
     // d dosen't include the beginning 4 ones &
     // last 4 zeros.
     void serial_data_transfer(uint16_t d);
