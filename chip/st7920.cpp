@@ -1,3 +1,8 @@
+//--------------------------------------------------------------
+// copyright (c) 2013 jks Liu.
+// All rights reserved.
+// -------------------------------------------------------------
+
 #include "st7920.hpp"
 #include "st7920_instruction_set.h"
 #include <util/delay.h>
