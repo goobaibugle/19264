@@ -7,7 +7,7 @@
 #define CH19264B_CH19264B_HPP
 
 #include <stdint.h>
-#include "../chip/st7920.hpp"
+#include "chip/st7920.hpp"
 
 class Ch19264b {
 public:
@@ -34,9 +34,22 @@ public:
     // (y0, x0) are included, but (y1, x1) are not.
     int8_t clear_graphic(uint8_t y0, uint8_t x0,
                           uint8_t y1, uint8_t x1);
+    int8_t reverse_toggle(uint8_t y);
 private:
     class St7920 st7920_top_;
     class St7920 st7920_bottom_;
+    int8_t write_16_pixels_(uint8_t y, uint8_t x, uint16_t s) {
+        if (y < 32) { 
+            st7920_top_.enter_extended();
+            st7920_top_.write_16_pixels(y, x, s);
+        } else if (y < 64) {
+            st7920_bottom_.enter_extended();
+            st7920_bottom_.write_16_pixels(y - 32, x, s);
+        } else {
+            return -1;
+        }
+        return 0;
+    }
 };
 
 #endif  // CH19264B_CH19264B_HPP

@@ -14,6 +14,8 @@
  * and put cursor to origin £»the content of DDRAM are not changed */
 #define RETURN_HOME 0x02  
 
+#define REVERSE 0x04
+
 /* Mask set cannot be used independently */
 #define DISPLAY_CONTROL_DISPLAY_ON 0x04
 #define DISPLAY_CONTROL_CURSOR_ON 0x02

@@ -18,7 +18,6 @@ St7920::St7920(volatile uint8_t *rs_cs_port, uint8_t rs_cs_mask,
     display_control_(0x08), function_set_(0x38)
 {
     initialize();
-    cursor_off();
 }
 
 void St7920::write_data(uint8_t b) {
@@ -73,14 +72,10 @@ int8_t St7920::initialize(void) {
     // Set CS & SCLK out mode
     *(rs_cs_port_ - 1) |= 1 << rs_cs_mask_;
     *(e_sclk_port_ - 1) |= 1 << e_sclk_mask_;
-    enter_basic();
-    clear();
-    display_on();
     return 0;
 }
 
 int8_t St7920::clear(void) {
-    enter_basic();
     write_command(DISPLAY_CLEAR);
     // Found in practice that delay is require
     _delay_ms(2);               
@@ -88,7 +83,6 @@ int8_t St7920::clear(void) {
 }
 
 int8_t St7920::set_cursor(uint8_t y, uint8_t x) {
-    enter_basic();
     write_command(DDRAM_BASE_ADDRESS + y * DDRAM_COLUMN_NUM + x);
     return 0;
 }
@@ -107,61 +101,46 @@ int8_t St7920::display_string(uint8_t y, uint8_t x, const char *s) {
 int8_t St7920::write_16_pixels(uint8_t y, uint8_t x, uint16_t c) {
     write_command(GDRAM_BASE_ADDRESS + y);
     write_command(GDRAM_BASE_ADDRESS + x);
+    enter_basic();
     write_data(c >> 8);
     write_data(c & 0xff);
     return 0;
 }
 
 int8_t St7920::cursor_on(void) {
-    enter_basic();
     display_control_ |= DISPLAY_CONTROL_CURSOR_ON;
     write_command(display_control_);
     return 0;
 }
 
 int8_t St7920::cursor_off(void) {
-    enter_basic();
     display_control_ &= ~DISPLAY_CONTROL_CURSOR_ON;
     write_command(display_control_);
     return 0;
 }
 
 int8_t St7920::display_on(void) {
-    enter_basic();
     display_control_ |= DISPLAY_CONTROL_DISPLAY_ON;
     write_command(display_control_);
     return 0;
 }
 
 int8_t St7920::display_off(void) {
-    enter_basic();
     display_control_ &= ~DISPLAY_CONTROL_DISPLAY_ON;
     write_command(display_control_);
     return 0;
 }
 
 int8_t St7920::graphic_on(void) {
-    enter_extended();
     function_set_ |= FUNCTION_SET_GRAPHIC_DISPLAY_ON;
     write_command(function_set_);
     return 0;
 }
 
 int8_t St7920::graphic_off(void) {
-    enter_extended();
     function_set_ &= ~FUNCTION_SET_GRAPHIC_DISPLAY_ON;
     write_command(function_set_);
     return 0;
-}
-
-int8_t St7920::graphic_clear(void) {
-    enter_extended();
-    graphic_on();
-    for (uint8_t i = 0; i < 0x3f; ++i) {
-        for (uint8_t j = 0; j < 0x0f; ++j) {
-            write_16_pixels(i, j, 0x0000);
-        }
-    }
 }
 
 int8_t St7920::enter_basic(void) {
@@ -173,6 +152,12 @@ int8_t St7920::enter_basic(void) {
 int8_t St7920::enter_extended(void) {
     function_set_ |= FUNCTION_SET_EXTENDED;
     write_command(function_set_);
+    return 0;
+}
+
+int8_t St7920::reverse_toggle(uint8_t y) {
+    enter_extended();
+    write_command(REVERSE + y);
     return 0;
 }
 
